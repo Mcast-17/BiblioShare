@@ -66,14 +66,24 @@ In conformità con le linee guida per lo sviluppo sicuro del software e la gesti
 ---
 
 ## Installazione e Configurazione
+1. **Clonare il repository:**
+2. **Installare le dipendenze necessarie:**   pip install -r app/requirements.txt
+3. **Crea un file chiamato esattamente .env all'interno della cartella app/ e inserisci i tuoi parametri locali seguendo questa struttura:**                    SECRET_KEY=la_tua_chiave_segreta_qui
 
-1. Clonare il repository:
-2. Installare le dipendenze necessarie:pip install -r requirements.txt
-3. Configurare le variabili d'ambiente:Rinominare il file .env in .env.example e inserire i parametri reali del proprio ambiente locale (chiave segreta ed eventuali password del database locale).
-4. Creare il database MySQL ed importare
-5. biblioteca_share.sql:Modificare le credenziali del database all'interno di app.py in base alla propria configurazione locale.
-6. Avviare il server Flask: python app.py
-7. Aprire il browser: http://127.0.0.1:5000
+     DB_HOST=localhost
+     
+     DB_USER=il_tuo_utente_mysql
+     
+     DB_PASSWORD=la_tua_password_mysql
+     
+     DB_NAME=biblioteca_share
+
+5. **Creare il database MySQL ed importare biblioteca_share.sql:**
+Importa il file SQL nel tuo gestore di database locale per generare lo schema e le tabelle.
+6. **Avviare il server Flask:**    
+    python app.py
+7. **Aprire il browser:**
+   Naviga all'indirizzo [http://127.0.0.1:5000](http://127.0.0.1:5000) per utilizzare l'applicazione.
 
 ---
 
@@ -106,8 +116,7 @@ Questa immagine viene utilizzata come copertina predefinita del progetto, garant
 ---
 
 ## Struttura del progetto
-
- BiblioShare/
+<pre><code>BiblioShare/
 │
 ├── migrate_passwords.py              # Script per la migrazione delle password
 │
@@ -120,7 +129,6 @@ Questa immagine viene utilizzata come copertina predefinita del progetto, garant
 │   └── covers/                       # Copertine libri
 │
 ├── app/                              # Applicazione Flask
-│   │
 │   ├── app.py                        # File principale Flask
 │   ├── requirements.txt              # Dipendenze Python
 │   ├── .env                          # Variabili ambiente locali (segrete)
@@ -164,7 +172,8 @@ Questa immagine viene utilizzata come copertina predefinita del progetto, garant
     ├── mappa.png
     ├── libriUtente.png
     ├── profilo.png
-    └── statistiche.png
+    └── statistiche.png</code></pre>
+
 ---
 
 ## Autore
