@@ -66,7 +66,7 @@ In conformità con le linee guida per lo sviluppo sicuro del software e la gesti
 ---
 
 ## Installazione e Configurazione
-1. **Clonare il repository:**
+1. **Clonare il repository:**  https://github.com/Mcast-17/BiblioShare.git
 2. **Installare le dipendenze necessarie:**   pip install -r app/requirements.txt
 3. **Crea un file chiamato esattamente .env all'interno della cartella app/ e inserisci i tuoi parametri locali seguendo questa struttura:**                    SECRET_KEY=la_tua_chiave_segreta_qui
 
