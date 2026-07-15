@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it"> <!-- Lingua del documento: italiano -->
+
+<head>
+<meta charset="UTF-8"> <!-- Codifica caratteri -->
+<title>Libri - Biblioshare</title> <!-- Titolo della pagina -->
+
+<!-- Bootstrap per stile e componenti UI -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body {
+    background: #0f1117; /* Sfondo scuro */
+    color: white; /* Testo bianco */
+    font-family: Arial; /* Font principale */
+}
+
+/* HEADER */
+.header {
+    padding: 30px 20px 10px; /* Spaziatura interna */
+}
+
+/* GRIGLIA LIBRI */
+.book-grid {
+    display: grid; /* Layout a griglia */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    /* Colonne responsive: si adattano allo spazio disponibile */
+    gap: 15px; /* Spazio tra card */
+    padding: 20px; /* Spazio interno */
+}
+
+/* CARD LIBRO */
+.book-card {
+    background: #1c1f2a; /* Sfondo card */
+    border-radius: 14px; /* Angoli arrotondati */
+    padding: 15px; /* Spazi interni */
+    transition: 0.3s; /* Animazione hover */
+    cursor: pointer; /* Cursore cliccabile */
+    min-height: 180px; /* Altezza minima */
+}
+
+/* EFFETTO HOVER CARD */
+.book-card:hover {
+    transform: scale(1.05); /* Zoom leggero */
+    background: #2a2f3d; /* Cambia colore */
+}
+
+/* BADGE CATEGORIA */
+.badge {
+    margin-top: 10px; /* Spazio sopra badge */
+}
+
+/* TESTO LOADING */
+.loading {
+    text-align: center; /* Centra testo */
+    margin-top: 50px; /* Spazio dall'alto */
+    opacity: 0.7; /* Leggermente trasparente */
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER DELLA PAGINA -->
+<div class="header">
+    <h2>📖 Catalogo Libri</h2> <!-- Titolo principale -->
+    <p style="opacity:0.7;">
+        Esplora tutti i libri disponibili nella piattaforma
+    </p> <!-- Sottotitolo -->
+</div>
+
+<!-- INDICATORE DI CARICAMENTO -->
+<div id="loading" class="loading">
+    Caricamento libri...
+</div>
+
+<!-- CONTENITORE DINAMICO LIBRI -->
+<div id="lista" class="book-grid"></div>
+
+<script>
+
+/* CHIAMATA API PER OTTENERE I LIBRI */
+fetch("/api/libri") // richiesta HTTP GET al backend
+.then(r => r.json()) // converte risposta in JSON
+.then(data => {
+
+    let html = ""; // stringa HTML che verrà costruita dinamicamente
+
+    // ciclo su tutti i libri ricevuti dall'API
+    data.forEach(l => {
+
+        html += `
+        <div class="book-card">
+
+            <!-- Titolo libro -->
+            <h5>${l.titolo}</h5>
+
+            <!-- Autore -->
+            <p style="opacity:0.8;">${l.autore}</p>
+
+            <!-- Città (fallback se non esiste) -->
+            <p style="font-size:14px; opacity:0.7;">
+                📍 ${l.citta || "Sconosciuta"}
+            </p>
+
+            <!-- Categoria come badge -->
+            <span class="badge bg-primary">
+                ${l.categoria}
+            </span>
+
+        </div>
+        `;
+    });
+
+    // inserisce HTML generato nella pagina
+    document.getElementById("lista").innerHTML = html;
+
+    // nasconde il messaggio di loading
+    document.getElementById("loading").style.display = "none";
+
+});
+
+</script>
+
+</body>
+</html>

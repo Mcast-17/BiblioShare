@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+<meta charset="UTF-8">
+<title>Biblioshare</title>
+
+<!-- Bootstrap per layout e componenti pronti -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js per grafici -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* =========================
+   STILE GENERALE PAGINA
+========================= */
+body {
+    background: #0f1117; /* sfondo scuro */
+    color: white;
+    font-family: Arial;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+    background: rgba(0,0,0,0.85); /* semi trasparente */
+    backdrop-filter: blur(10px); /* effetto vetro */
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+.hero {
+    margin: 20px;
+    padding: 50px;
+    border-radius: 18px;
+
+    /* overlay nero + immagine di sfondo */
+    background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(0,0,0,0.4)),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f');
+    background-size: cover;
+    background-position: center;
+}
+
+.hero h1 {
+    font-size: 38px;
+}
+
+/* =========================
+   STATISTICHE (BOX)
+========================= */
+.stats-bar {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* singolo box statistiche */
+.stat-box {
+    background: rgba(255,255,255,0.08);
+    padding: 15px;
+    border-radius: 12px;
+    min-width: 150px;
+    cursor: pointer; /* cliccabile */
+}
+
+/* bottone dentro stats */
+.btn-stats {
+    margin-top: 10px;
+    width: 100%;
+}
+
+/* =========================
+   TITOLI SEZIONI
+========================= */
+.row-title {
+    margin: 25px 20px 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* =========================
+   SCROLL ORIZZONTALE LIBRI
+========================= */
+.scroll-row {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 20px;
+}
+
+/* nasconde scrollbar */
+.scroll-row::-webkit-scrollbar {
+    display: none;
+}
+
+/* card libro */
+.book-card {
+    min-width: 180px;
+    height: 230px;
+    background: #1c1f2a;
+    border-radius: 12px;
+    padding: 12px;
+    transition: 0.3s;
+}
+
+/* effetto hover card */
+.book-card:hover {
+    transform: scale(1.07);
+    background: #2a2f3d;
+}
+
+/* =========================
+   SEZIONE GRAFICI
+========================= */
+#chartSection {
+    display: none; /* nascosta di default */
+    margin: 20px;
+    padding: 20px;
+    background: #1c1f2a;
+    border-radius: 12px;
+}
+
+/* =========================
+   BOX PRESTITI
+========================= */
+.loan-box {
+    margin: 20px;
+    padding: 20px;
+    background: #1c1f2a;
+    border-radius: 12px;
+}
+
+/* =========================
+   GRID GRAFICI
+========================= */
+.grid-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px;
+}
+
+/* singolo grafico */
+.chart-card {
+    background: #1c1f2a;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* responsive mobile */
+@media(max-width: 768px) {
+    .grid-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+<nav class="navbar navbar-dark px-4 py-3 d-flex justify-content-between">
+
+    <!-- logo -->
+    <div><b>📚 Biblioshare</b></div>
+
+    <!-- utente + logout -->
+    <div class="d-flex gap-3 align-items-center">
+        <a href="/profile">👤 {{nome}}</a>
+        <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+
+</nav>
+
+<!-- =========================
+     HERO SECTION
+========================= -->
+<div class="hero">
+
+    <!-- saluto dinamico utente -->
+    <h1>Ciao, {{nome}} 👋</h1>
+    <p>La tua biblioteca digitale intelligente</p>
+
+    <!-- statistiche rapide -->
+    <div class="stats-bar">
+
+        <!-- numero utenti -->
+        <div class="stat-box">
+            Utenti<br>
+            <b id="utenti">0</b>
+        </div>
+
+        <!-- statistiche cliccabili -->
+        <div class="stat-box" id="statsCard">
+            Statistiche<br>
+            <b id="top">0</b>
+            <small style="display:block; opacity:0.7;">clicca o bottone</small>
+
+            <!-- bottone apertura grafici -->
+            <button id="statsBtn" class="btn btn-primary btn-sm btn-stats">
+                📊 Apri statistiche
+            </button>
+        </div>
+
+        <!-- prestiti utente -->
+        <div class="stat-box">
+            Prestiti<br>
+            <b>{{prestiti_utente}}</b>
+        </div>
+
+    </div>
+</div>
+
+<!-- =========================
+     SEZIONE LIBRI
+========================= -->
+<div class="row-title">📚 I tuoi libri</div>
+
+<div class="scroll-row">
+
+    <a class="book-card" href="/my_books">
+        <h6>I miei libri</h6>
+    </a>
+
+    <a class="book-card" href="/add_book">
+        <h6>➕ Aggiungi libro</h6>
+    </a>
+
+    <a class="book-card" href="/mappa">
+        <h6>🗺 Mappa libri</h6>
+    </a>
+
+</div>
+
+<!-- =========================
+     ESPLORA
+========================= -->
+<div class="row-title">🌍 Esplora</div>
+
+<div class="scroll-row">
+
+    <a class="book-card" href="/geo_search">
+        <h6>Ricerca geospaziale</h6>
+    </a>
+
+    <a class="book-card" href="/search">
+        <h6>Ricerca globale</h6>
+    </a>
+
+</div>
+
+<!-- =========================
+     GRAFICI ANALYTICS
+========================= -->
+<div id="chartSection">
+
+    <h5>📊 Analytics</h5>
+
+    <div class="grid-charts">
+
+        <!-- grafico libri più visualizzati -->
+        <div class="chart-card">
+            <h6>📈 Libri più visualizzati</h6>
+            <canvas id="chartLibri"></canvas>
+        </div>
+
+        <!-- grafico stato prestiti -->
+        <div class="chart-card">
+            <h6>📊 Stato richieste prestito</h6>
+            <canvas id="chartStato"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =========================
+   TOGGLE SEZIONE STATISTICHE
+========================= */
+function toggleStats() {
+    const el = document.getElementById("chartSection");
+
+    // mostra/nasconde la sezione
+    el.style.display = (el.style.display === "block") ? "none" : "block";
+
+    // scroll automatico se aperto
+    if (el.style.display === "block") {
+        el.scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+/* click su box statistiche */
+document.getElementById("statsCard").addEventListener("click", toggleStats);
+
+/* click su bottone (evita doppio trigger) */
+document.getElementById("statsBtn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleStats();
+});
+
+/* =========================
+   FETCH UTENTI
+========================= */
+fetch("/api/utenti/count")
+.then(r => r.json())
+.then(d => {
+    document.getElementById("utenti").innerText = d.totale_utenti;
+});
+
+/* =========================
+   TOP LIBRI + GRAFICO BAR
+========================= */
+fetch("/api/top_libri")
+.then(r => r.json())
+.then(data => {
+
+    document.getElementById("top").innerText = data.length;
+
+    new Chart(document.getElementById("chartLibri"), {
+        type: "bar",
+        data: {
+            labels: data.map(x => x.titolo),
+            datasets: [{
+                label: "Visualizzazioni",
+                data: data.map(x => x.numero_visualizzazioni),
+                backgroundColor: "#4f8cff"
+            }]
+        }
+    });
+});
+
+/* =========================
+   GRAFICO STATO PRESTITI
+========================= */
+fetch("/api/richieste/stato")
+.then(r => r.json())
+.then(data => {
+
+    console.log("STATO:", data);
+
+    new Chart(document.getElementById("chartStato"), {
+        type: "doughnut",
+        data: {
+            labels: data.map(x => x.stato),
+            datasets: [{
+                data: data.map(x => x.totale),
+                backgroundColor: ["#facc15", "#22c55e", "#ef4444"]
+            }]
+        }
+    });
+
+})
+.catch(err => console.error("Errore chart:", err));
+
+/* =========================
+   PRESTITO ATTUALE UTENTE
+========================= */
+fetch("/api/loan/current")
+.then(r => r.json())
+.then(data => {
+
+    const el = document.getElementById("loanBook");
+
+    if (!data || !data.titolo) {
+        el.innerText = "Nessun libro attualmente in prestito.";
+        return;
+    }
+
+    el.innerHTML = `
+        <b>${data.titolo}</b><br>
+        Autore: ${data.autore}<br>
+        Scadenza: ${data.data_scadenza}
+    `;
+});
+
+</script>
+
+</body>
+</html>

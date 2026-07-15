@@ -1,0 +1,16 @@
+# =========================================================================
+# FILE DI ESCLUSIONE GIT PER PROGETTO TESI BIBLIOSHARE
+# =========================================================================
+# 1. SICUREZZA: Esclude il file locale con le password e le chiavi segrete
+.env
+# 2. AMBIENTE VIRTUALE: Esclude le librerie fisiche installate sul PC (inutili su GitHub)
+venv/
+.venv/
+env/
+ENV/
+# 3. CACHE PYTHON: Esclude i file temporanei compilati automaticamente da Python
+pycache/
+*.pyc
+*.pyo
+*.pyd
+# 4. IDE E SISTEMA: Utilizzato IDLE standard di Python (nessun file generato)

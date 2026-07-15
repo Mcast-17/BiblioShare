@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+<meta charset="UTF-8">
+<title>Ricerca Geospaziale - Biblioshare</title>
+
+<!-- Bootstrap per layout e componenti UI -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* =========================
+   STILE GENERALE DELLA PAGINA
+   ========================= */
+
+body {
+    margin: 0; /* elimina margini di default */
+    background: #0f1117; /* sfondo scuro */
+    color: white; /* testo bianco */
+    font-family: Arial; /* font principale */
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.header {
+    padding: 25px 20px 10px; /* spazio interno sopra e ai lati */
+}
+
+/* =========================
+   CARD PRINCIPALE
+   ========================= */
+
+.card {
+    background: #1c1f2a; /* colore scuro card */
+    border: none; /* niente bordo */
+    border-radius: 14px; /* angoli arrotondati */
+    color: white; /* testo bianco */
+}
+
+/* =========================
+   INPUT FORM
+   ========================= */
+
+.form-control {
+    background: rgba(255,255,255,0.08); /* input semi-trasparente */
+    border: none; /* nessun bordo */
+    color: white; /* testo bianco */
+}
+
+/* placeholder degli input */
+.form-control::placeholder {
+    color: rgba(255,255,255,0.5); /* testo più trasparente */
+}
+
+/* quando l'input è selezionato */
+.form-control:focus {
+    background: rgba(255,255,255,0.12); /* leggermente più chiaro */
+    color: white;
+    box-shadow: none; /* rimuove effetto bootstrap */
+}
+
+/* =========================
+   BOTTONE
+   ========================= */
+
+.btn-primary {
+    border-radius: 10px; /* angoli arrotondati */
+    font-weight: bold; /* testo in grassetto */
+}
+
+/* =========================
+   TITOLO RISULTATI
+   ========================= */
+
+.result-title {
+    margin: 20px; /* spazio attorno */
+    font-weight: bold;
+}
+
+/* =========================
+   CARD RISULTATI
+   ========================= */
+
+.result-card {
+    background: #1c1f2a; /* sfondo scuro */
+    border-radius: 14px; /* angoli arrotondati */
+    padding: 15px; /* spazio interno */
+    margin-bottom: 10px; /* spazio tra risultati */
+    transition: 0.2s; /* animazione hover */
+}
+
+/* effetto hover sui risultati */
+.result-card:hover {
+    transform: scale(1.02); /* leggero ingrandimento */
+    background: #2a2f3d; /* cambia colore */
+}
+
+/* =========================
+   LAYOUT CONTAINER
+   ========================= */
+
+.container {
+    max-width: 900px; /* limita larghezza pagina */
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     CONTENITORE PRINCIPALE
+     ========================= -->
+<div class="container mt-5">
+
+    <!-- =========================
+         HEADER PAGINA
+         ========================= -->
+    <div class="header">
+        <h3>🌍 Ricerca geospaziale libri</h3>
+        <p style="opacity:0.7;">Trova libri in base alla posizione geografica</p>
+    </div>
+
+    <!-- =========================
+         FORM DI INPUT
+         ========================= -->
+    <div class="card p-3 mt-3">
+
+        <div class="row g-2">
+
+            <!-- input latitudine -->
+            <div class="col-md-4">
+                <input id="lat" class="form-control" placeholder="Latitudine">
+            </div>
+
+            <!-- input longitudine -->
+            <div class="col-md-4">
+                <input id="lon" class="form-control" placeholder="Longitudine">
+            </div>
+
+            <!-- input raggio ricerca -->
+            <div class="col-md-4">
+                <input id="radius" class="form-control" placeholder="Raggio (km)" value="5">
+            </div>
+
+        </div>
+
+        <!-- bottone ricerca -->
+        <button class="btn btn-primary mt-3 w-100" onclick="searchGeo()">
+            🔍 Cerca libri
+        </button>
+
+    </div>
+
+    <!-- =========================
+         AREA RISULTATI
+         ========================= -->
+    <div class="result-title">Risultati</div>
+    <div id="results"></div>
+
+</div>
+
+<script>
+
+/* =========================
+   FUNZIONE DI RICERCA GEO
+   ========================= */
+
+function searchGeo() {
+
+    // prende i valori inseriti dall'utente
+    let lat = document.getElementById("lat").value;
+    let lon = document.getElementById("lon").value;
+    let radius = document.getElementById("radius").value;
+
+    // chiamata API al backend
+    fetch(`/api/search_geo?lat=${lat}&lon=${lon}&radius=${radius}`)
+        .then(r => r.json()) // converte risposta in JSON
+        .then(data => {
+
+            let html = ""; // HTML dinamico dei risultati
+
+            // se non ci sono risultati
+            if (!data || data.length === 0) {
+
+                html = `
+                    <div class="result-card">
+                        Nessun libro trovato in questa area.
+                    </div>
+                `;
+
+            } else {
+
+                // per ogni libro trovato
+                data.forEach(b => {
+
+                    html += `
+                        <div class="result-card">
+
+                            <!-- titolo libro -->
+                            <b>${b.titolo}</b><br>
+
+                            <!-- autore -->
+                            <span style="opacity:0.8;">${b.autore}</span><br><br>
+
+                            <!-- categoria libro -->
+                            Categoria: ${b.categoria}<br>
+
+                            <!-- proprietario del libro -->
+                            Proprietario: ${b.nome} ${b.cognome}<br>
+
+                            <!-- distanza dalla posizione -->
+                            <div style="margin-top:8px; opacity:0.8;">
+                                📍 Distanza: ${b.distanza_km} km
+                            </div>
+
+                        </div>
+                    `;
+                });
+            }
+
+            // inserisce risultati nella pagina
+            document.getElementById("results").innerHTML = html;
+        });
+}
+
+</script>
+
+</body>
+</html>

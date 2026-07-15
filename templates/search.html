@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+<meta charset="UTF-8">
+
+<!-- Titolo della pagina che appare nel tab del browser -->
+<title>Ricerca libri - Biblioshare</title>
+
+<!-- Import del framework Bootstrap per styling rapido e responsive -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* =========================
+   STILE GENERALE DEL BODY
+   ========================= */
+body {
+    margin: 0; /* Rimuove margini di default */
+    background: #0f1117; /* Sfondo scuro principale */
+    color: white; /* Testo bianco */
+    font-family: Arial; /* Font della pagina */
+}
+
+/* =========================
+   NAVBAR (barra superiore)
+   ========================= */
+.navbar {
+    background: rgba(0,0,0,0.7); /* Sfondo semi-trasparente nero */
+    backdrop-filter: blur(10px); /* Effetto vetro sfocato */
+}
+
+/* =========================
+   HEADER (titolo sezione)
+   ========================= */
+.header {
+    padding: 25px 20px 10px; /* Spazi interni */
+}
+
+/* =========================
+   SEARCH BOX (barra ricerca)
+   ========================= */
+.search-box {
+    margin: 20px; /* Spazio esterno */
+}
+
+/* Campo input Bootstrap personalizzato */
+.form-control {
+    background: rgba(255,255,255,0.08); /* Sfondo trasparente chiaro */
+    border: none; /* Nessun bordo */
+    color: white; /* Testo bianco */
+}
+
+/* Placeholder del campo input */
+.form-control::placeholder {
+    color: rgba(255,255,255,0.5); /* Grigio trasparente */
+}
+
+/* Stato focus (quando clicchi nel campo) */
+.form-control:focus {
+    background: rgba(255,255,255,0.12); /* Più visibile */
+    color: white;
+    box-shadow: none; /* Rimuove bordo blu Bootstrap */
+}
+
+/* =========================
+   CONTENITORE TABELLA
+   ========================= */
+.table-wrapper {
+    margin: 20px;
+    background: rgba(255,255,255,0.04); /* Sfondo leggero */
+    border-radius: 12px; /* Angoli arrotondati */
+    overflow: hidden; /* Nasconde bordi interni */
+}
+
+/* =========================
+   TABELLA
+   ========================= */
+table {
+    margin: 0;
+    color: white; /* Testo bianco */
+}
+
+/* Intestazione tabella */
+thead {
+    background: rgba(255,255,255,0.08);
+}
+
+/* Righe tabella */
+tbody tr {
+    transition: 0.2s; /* Animazione hover */
+}
+
+/* Effetto hover sulle righe */
+tbody tr:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+/* =========================
+   BADGE (stato libro)
+   ========================= */
+.badge {
+    font-size: 12px; /* Dimensione ridotta */
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR PRINCIPALE
+     ========================= -->
+<nav class="navbar navbar-dark px-4 py-3 d-flex justify-content-between">
+
+    <!-- Nome applicazione -->
+    <div><b>📚 Biblioshare</b></div>
+
+    <!-- Bottone che porta alla dashboard -->
+    <a href="/dashboard" class="btn btn-outline-light btn-sm">
+        Dashboard
+    </a>
+
+</nav>
+
+<!-- =========================
+     HEADER PAGINA
+     ========================= -->
+<div class="header">
+    <h3>🔎 Cerca libri</h3>
+    <p style="opacity:0.7;">Trova libri per titolo, autore o categoria</p>
+</div>
+
+<!-- =========================
+     BARRA DI RICERCA
+     ========================= -->
+<div class="search-box">
+
+    <!-- Form GET: invia parametro "q" nell'URL -->
+    <form method="GET">
+
+        <div class="input-group">
+
+            <!-- Input di ricerca -->
+            <input
+                type="text"
+                name="q"
+                class="form-control"
+                placeholder="Cerca libri..."
+                value="{{ ricerca }}">
+
+            <!-- Bottone di submit -->
+            <button class="btn btn-primary">
+                🔍 Cerca
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- =========================
+     TABELLA RISULTATI
+     ========================= -->
+<div class="table-wrapper">
+
+    <table class="table table-dark table-hover mb-0">
+
+        <!-- Intestazione colonne -->
+        <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Autore</th>
+                <th>Categoria</th>
+                <th>Anno</th>
+                <th>Proprietario</th>
+                <th>Città</th>
+                <th>Stato</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        <!-- Ciclo Jinja: per ogni libro nella lista "libri" -->
+        {% for libro in libri %}
+
+        <tr>
+
+            <!-- Dati del libro -->
+            <td>{{libro.titolo}}</td>
+            <td>{{libro.autore}}</td>
+            <td>{{libro.categoria}}</td>
+            <td>{{libro.anno}}</td>
+
+            <!-- Proprietario del libro -->
+            <td>{{libro.nome}} {{libro.cognome}}</td>
+
+            <!-- Città del proprietario -->
+            <td>{{libro.citta}}</td>
+
+            <!-- Stato disponibilità -->
+            <td>
+
+                <!-- Se disponibile -->
+                {% if libro.disponibilita %}
+                    <span class="badge bg-success">Disponibile</span>
+
+                <!-- Se non disponibile -->
+                {% else %}
+                    <span class="badge bg-danger">Non disponibile</span>
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

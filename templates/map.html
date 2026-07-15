@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="it"> <!-- Lingua del documento: italiano -->
+
+<head>
+<meta charset="UTF-8"> <!-- Codifica caratteri UTF-8 -->
+<title>Mappa Biblioshare</title> <!-- Titolo pagina -->
+
+<!-- Bootstrap per layout e componenti UI -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Leaflet CSS per la mappa interattiva -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+
+body {
+    margin: 0; /* Rimuove margini default */
+    background: #0f1117; /* Sfondo scuro */
+    color: white; /* Testo bianco */
+    font-family: Arial; /* Font principale */
+}
+
+/* NAVBAR */
+.navbar {
+    background: rgba(0,0,0,0.7); /* Sfondo semi-trasparente */
+    backdrop-filter: blur(10px); /* Effetto vetro sfocato */
+}
+
+/* HEADER */
+.header {
+    padding: 20px; /* Spaziatura interna */
+}
+
+/* CONTENITORE MAPPA */
+#map {
+    height: 80vh; /* Altezza 80% viewport */
+    width: 100%; /* Larghezza piena */
+    border-radius: 16px; /* Angoli arrotondati */
+    margin: 0 20px 20px; /* Margini esterni */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6); /* Ombra profondità */
+}
+
+/* BARRA INFO */
+.info-bar {
+    display: flex; /* Layout orizzontale */
+    gap: 15px; /* Spazio tra box */
+    padding: 0 20px 15px; /* Spaziatura */
+    flex-wrap: wrap; /* Va a capo su schermi piccoli */
+}
+
+/* BOX INFO */
+.info-box {
+    background: rgba(255,255,255,0.08); /* Sfondo semi-trasparente */
+    padding: 12px 15px; /* Spazi interni */
+    border-radius: 12px; /* Angoli arrotondati */
+    min-width: 200px; /* Larghezza minima */
+}
+
+/* TITOLI */
+h3 {
+    margin: 0; /* Rimuove margini */
+    font-weight: bold; /* Grassetto */
+}
+
+/* PARAGRAFI */
+p {
+    opacity: 0.7; /* Testo leggermente trasparente */
+    margin: 0; /* Nessun margine */
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR SUPERIORE -->
+<nav class="navbar navbar-dark px-4 py-3 d-flex justify-content-between">
+
+    <!-- Logo sistema -->
+    <div><b>📚 Biblioshare</b></div>
+
+    <!-- Bottone ritorno dashboard -->
+    <a href="/dashboard" class="btn btn-light btn-sm">
+        Dashboard
+    </a>
+
+</nav>
+
+<!-- HEADER PAGINA -->
+<div class="header">
+    <h3>📍 Mappa libri geolocalizzati</h3>
+    <p>Esplora i libri condivisi dagli utenti sulla mappa</p>
+</div>
+
+<!-- BARRA INFORMATIVA -->
+<div class="info-bar">
+
+    <!-- Tipo visualizzazione mappa -->
+    <div class="info-box">
+        <div>Visualizzazione</div>
+        <b>OpenStreetMap</b>
+    </div>
+
+    <!-- Fonte dati -->
+    <div class="info-box">
+        <div>Dati</div>
+        <b>Live API</b>
+    </div>
+
+</div>
+
+<!-- CONTENITORE MAPPA -->
+<div id="map"></div>
+
+<!-- LIBRERIA LEAFLET JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+// 1. INIZIALIZZAZIONE MAPPA
+// Centro su Italia (latitudine, longitudine, zoom)
+var map = L.map('map').setView([41.9028, 12.4964], 6);
+
+// 2. LAYER MAPPA (OpenStreetMap)
+// ATTENZIONE: attribution obbligatoria per licenza
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// 3. CARICAMENTO DATI LIBRI DA API
+fetch("/api/map_libri") // richiesta al backend
+.then(res => res.json()) // parsing JSON
+.then(data => {
+
+    // ciclo su tutti i libri ricevuti
+    data.forEach(libro => {
+
+        // controllo che coordinate esistano
+        if (libro.latitudine && libro.longitudine) {
+
+            // crea marker sulla mappa
+            L.marker([libro.latitudine, libro.longitudine])
+                .addTo(map)
+
+                // popup informativo del libro
+                .bindPopup(`
+                    <div style="color:black">
+                        <b>${libro.titolo}</b><br>
+                        Autore: ${libro.autore}<br>
+                        Proprietario: ${libro.nome} ${libro.cognome}
+                    </div>
+                `);
+        }
+    });
+
+});
+
+</script>
+
+</body>
+</html>
