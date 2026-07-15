@@ -47,43 +47,28 @@ Gli attributi principali sono:
 Questa entità permette di gestire il flusso delle richieste tra proprietari e utenti interessati.
 
 ##Schema relazionale
+
 Dal modello concettuale è stato successivamente derivato lo schema relazionale implementato nel database MySQL.
+
 La struttura logica del database comprende le seguenti relazioni principali:
 
-UTENTI(
-id_user,
-nome,
-cognome,
-email,
-password,
-citta,
-latitudine,
-longitudine
-)
-La chiave primaria è rappresentata da:id_user
+UTENTI(id_user, nome, cognome, email, password, citta, latitudine, longitudine)
+- Chiave primaria: id_user
 
-LIBRI(
-id_libro,
-id_utente,
-titolo,
-autore,
-categoria,
-anno,
-descrizione,
-disponibilita,
-numero_visualizzazioni
-)
-La relazione con la tabella UTENTI è realizzata tramite:id_utente → UTENTI(id_user)che rappresenta la proprietà del libro da parte di un utente.
+LIBRI(id_libro, id_utente, titolo, autore, categoria, anno, descrizione, disponibilita, numero_visualizzazioni)
+- Chiave primaria: id_libro
+- Chiave esterna: id_utente → UTENTI(id_user) (rappresenta la proprietà del libro)
 
-RICHIESTA_PRESTITO(
-id_richiesta,
-id_libro,
-id_richiedente,
-stato
-)
-Le chiavi esterne permettono il collegamento tra:libro richiesto → utente che effettua la richiesta
+RICHIESTA_PRESTITO(id_richiesta, id_libro, id_richiedente, stato)
+- Chiave primaria: id_richiesta
+- Chiavi esterne: 
+  - id_libro → LIBRI(id_libro)
+  - id_richiedente → UTENTI(id_user) (utente che effettua la richiesta)
+
+
 
 ## Implementazione nel database MySQL
+
 Il modello progettato è stato implementato tramite un database relazionale MySQL denominato:biblioteca_share
 Il database contiene le tabelle necessarie al funzionamento dell'applicazione Flask e garantisce:
 integrità dei dati;
