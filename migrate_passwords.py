@@ -1,43 +1,69 @@
-import pymysql#Per connettere il database#
-import bcrypt#Per creare hash sicuri delle password#
+import os
+import pymysql  # Per connettere il database
+import bcrypt   # Per creare hash sicuri delle password
+from dotenv import load_dotenv
 
-# connessione DB (uguale a Flask)#
+# Carica le variabili dal file .env
+load_dotenv()
+
+# Recupero configurazione database
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+# Connessione DB
 db = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="TesiDatabase2026!",
-    database="biblioteca_share",
+    host=DB_HOST,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    database=DB_NAME,
     cursorclass=pymysql.cursors.DictCursor
 )
-#Creazione “cursore”, cioè l’oggetto che permette di:eseguire query SQL,leggere e modificare dati nel database#
+
+# Creazione cursore
+# Permette di eseguire query SQL e leggere/modificare i dati
 cursor = db.cursor()
 
-# tutti gli utenti#
+# Recupera tutti gli utenti
 cursor.execute("SELECT id_user, email, password FROM UTENTI")
-#fetchall recupera i dati e li mette in dizionari#
+
+# fetchall recupera i dati e li mette in dizionari
 utenti = cursor.fetchall()
 
 for u in utenti:
-    password = u["password"]#Estrae la password dell’utente corrente dal database#
 
-    #Se NON è hashata Controlla se la password è già in formato bcrypt:le password hashate bcrypt iniziano con $2b$#
-    #Se NON inizia così → significa che è ancora in chiaro#
+    # Estrae la password dell'utente corrente
+    password = u["password"]
+
+    # Controlla se la password è già hashata con bcrypt.
+    # Le password bcrypt iniziano con $2b$
     if not password.startswith("$2b$"):
-    
-    #Converte la password in chiaro in hash sicuro#
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-#Aggiorna il database:Sostituzione password in chiaro a password hashate#
+        # Converte la password in chiaro in un hash sicuro
+        hashed = bcrypt.hashpw(
+            password.encode("utf-8"),
+            bcrypt.gensalt()
+        ).decode("utf-8")
+
+        # Aggiorna il database sostituendo
+        # la password in chiaro con quella hashata
         cursor.execute("""
             UPDATE UTENTI
             SET password = %s
             WHERE id_user = %s
-        """, (hashed, u["id_user"]))
-        
-#Messaggio di log:stampa a schermo quale utente è stato aggiornato,utile per controllare il processo#
+        """, (
+            hashed,
+            u["id_user"]
+        ))
+
+        # Messaggio di log
         print(f"Password migrata per {u['email']}")
 
-db.commit()#Conferma tutte le modifiche nel database:senza questo non vengono salvate le modifiche#
-db.close()#Chiude la connessione al database#
+# Conferma tutte le modifiche
+db.commit()
 
-print("Migrazione completata")#Messaggio finale che indica:tutte le password sono state convertite con successo#
+# Chiude la connessione
+db.close()
+
+print("Migrazione completata")
